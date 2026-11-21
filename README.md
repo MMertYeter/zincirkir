@@ -26,6 +26,11 @@ Geliştirme parametreleri:
 
 - `?hiz=4`: her şeyi 4 kat hızlı oynatır (test için)
 - `?sahne=lapse|fin|sleep|morning|notes|chat`: doğrudan o sahneden başlar
+- `?kalite=dusuk` / `?kalite=yuksek`: hafif modu zorla aç/kapat
+
+## Hafif mod (Android, az RAM)
+
+Android telefonlarda, 4 GB ve altı RAM'de ya da 4 ve altı çekirdekte kendiliğinden açılır. Bu modda kâğıt dokusu katmanı kapanır, tanecik sabit durur ve ekranı karıştıran pahalı efektler (blend) sadeleşir. Ayrıca çizimler biraz daha düşük çözünürlükte hazırlanır. Görüntü neredeyse aynıdır. Android'de telefon eğilince oda paralaksla hareket eder; bunun için izin istenmez.
 
 ## Değiştirmesi kolay yerler (`index.html` başındaki `<script>`)
 
@@ -66,6 +71,7 @@ Hazır ses dosyası kullanılmadı. Bütün sesler WebAudio ile kodda üretiliyo
 ## Spesifikasyondan bilinçli küçük farklar
 
 - Kamera konumu: oda geniş planında telefon bölüm 4’teki yerde durur (yatay %7–50, dikey %56–100). Mesajlar okunurken ve yazılırken kamera telefona yaklaşır: telefon alttaki yaklaşık %60–64’e büyür, oda üstte kararmış ama canlı görünür. Geniş planda yazılar okunamayacak kadar küçük kalıyordu.
+- Omuz üstü kamera: Mert'in isteğiyle Rümeysa'nın başı ve saçı kadrajda değil. Yalnızca kameraya yakın sağ omzu (hafif flu) ve telefona uzanan kolu görünür. Uyku sahnesinde yastıktaki başı görünür.
 - Rümeysa’nın kendi alıntı yanıtlarında etiket “Yanıt verdin” (Instagram’daki gibi). Mert’in alıntılarında “Sana yanıt verdi”.
 - Kilit ekranında yıl dönerken gün adı da doğru günle birlikte değişir: Salı → Çarşamba → Cuma → Cumartesi → **Pazar**.
 - Yazma kolaylığı: telefon klavyesindeki tuşlar küçük. Bu yüzden parlayan tuşun dokunma alanı çevresine doğru genişletildi. Masaüstünde fiziksel klavye ve Enter da çalışır.

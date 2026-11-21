@@ -168,8 +168,8 @@ button{font-family:inherit}
   animation:rxIn .35s cubic-bezier(.3,1.7,.5,1)}
 .msg.hasrx{margin-bottom:9px}
 @keyframes rxIn{from{transform:scale(0)}to{transform:scale(1)}}
-.msg.blur .bub{filter:blur(4px);color:transparent;text-shadow:0 0 0 rgba(60,40,100,.7)}
-.msg.out.blur .bub{text-shadow:0 0 0 rgba(255,255,255,.8)}
+.msg.blur .bub{color:transparent;text-shadow:0 0 4px rgba(60,40,100,.75);box-shadow:0 0 5px 1px #ece6fb}
+.msg.out.blur .bub{text-shadow:0 0 4px rgba(255,255,255,.9);box-shadow:0 0 5px 1px #6b5bd6}
 .msg.typing .bub{padding:10px 12px;display:flex;gap:4px}
 .msg.typing .bub i{width:6px;height:6px;border-radius:50%;background:#8f84ad;animation:dot 1.1s infinite}
 .msg.typing .bub i:nth-child(2){animation-delay:.15s}.msg.typing .bub i:nth-child(3){animation-delay:.3s}
@@ -321,6 +321,13 @@ button{font-family:inherit}
 #end .b1{margin-top:18px;font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:.55}
 #end .btn{margin-top:22px;background:#6b5bd6;color:#fff}
 
+/* düşük güç modu */
+.low #paper{display:none}
+.low #grain{animation:none;mix-blend-mode:normal;opacity:.035}
+.low #hallSpill{mix-blend-mode:normal;opacity:calc(var(--hallA) * .12)}
+.low #strip{filter:none}
+.low #momShadow{filter:none}
+.low .layer{will-change:auto}
 @media (prefers-reduced-motion: reduce){
   #grain,.dust,#exclaim .ring{animation:none}
   .ap.notes,.ch-card,.lk-hint.on,#sendBtn.ready{animation:none}
@@ -587,8 +594,13 @@ for(const m of OPEN) if(m.w==='r') m.ty=1; // 7.1: Rümeysa'nın tüm mesajları
 const Q = new URLSearchParams(location.search);
 const SPEED = Math.max(.25, +(Q.get('hiz')||1));
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* Düşük güç modu: az RAM'li / Android telefonlarda pahalı karıştırma (blend) ve
+   animasyonlu tanecik kapatılır. ?kalite=yuksek ya da ?kalite=dusuk ile zorlanabilir. */
+const LOW = Q.get('kalite')==='dusuk' || (Q.get('kalite')!=='yuksek' &&
+  ((navigator.deviceMemory && navigator.deviceMemory<=4) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency<=4) || /Android/i.test(navigator.userAgent)));
 const $ = s=>document.querySelector(s);
 const stage=$('#stage');
+if(LOW) stage.classList.add('low');
 const wait = ms => new Promise(r=>setTimeout(r, ms/SPEED));
 const G = window.__g = {scene:'title', log:[], phoneMinTop:1e9};
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -630,7 +642,7 @@ function phaseMix(a,b,t,over){
 /* ============================================================
    BOYALI ÇİZİM (canvas) — gouache hissi
    ============================================================ */
-const RES = 2;
+const RES = LOW ? 1.5 : 2;
 const TEX = {};
 function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});}
 const rgba=(h,a)=>{const[r,g,b]=h2r(h);return`rgba(${r},${g},${b},${a})`;};
@@ -791,26 +803,23 @@ function drawBed(){
 const HAIR='#2b1d25', SWE='#a690d6', SKIN='#e2ad94';
 function hairStrands(c,x0,y0,x1,y1,n,color,a){for(let i=0;i<n;i++){const x=x0+R()*(x1-x0),y=y0+R()*(y1-y0)*.4;wline(c,[[x,y],[x+(R()-.5)*6,y+(y1-y0)*.4],[x+(R()-.5)*10,y+(y1-y0)*.7]],color,.8+R()*1.4,a*(.4+R()*.6));}}
 function drawGirlSit(c,down){
-  const dx=down?2:0, dy=down?-6:0, ar=down?1:0;
-  // kazak: omuzlar ve sırt (sağ omuz kameraya yakın, büyük)
-  paint(c,dense([[166,644],[170,560],[186,500],[208,468],[236,452],[278,450],[318,466],[350,494],[372,530],[372,644]],12),{c:SWE,tex:'suveter',ta:.4,ts:.38,sa:1.4,sv:.5,sl:14,n:600,g:[340,450,180,640],hl:'rgba(255,240,255,.18)',sh:'rgba(30,15,70,.38)',ew:10,ea:.18});
-  // sol kol telefona doğru (ya da indirilmiş)
-  if(!ar){
-    paint(c,[[206,470],[186,494],[166,532],[152,566],[150,596],[166,606],[184,592],[196,558],[212,520],[222,488]],{c:shade(SWE,-.06),tex:'suveter',ta:.4,ts:.38,sa:2,sl:12,g:[220,480,150,600],hl:'rgba(255,240,255,.12)',sh:'rgba(30,15,70,.35)'});
-    paint(c,ell(160,604,11,8,14,-.6),{c:SKIN,n:20,sl:5,g:[170,596,150,612],hl:'rgba(255,230,220,.25)',sh:'rgba(100,40,40,.25)'});
+  // Omuz üstü kamera: Rümeysa'nın başı/saçı kadrajda değil; yalnızca kameraya
+  // çok yakın sağ omzu (hafif flu) ve telefona uzanan kolu görünür.
+  const dy=down?10:0;
+  const blur=('filter' in c)&&!LOW; if(blur)c.filter='blur(1.2px)';
+  // telefona uzanan sağ kol (indirilmişse aşağı sarkar)
+  if(!down){
+    paint(c,[[300,540],[270,556],[238,584],[206,614],[186,646],[250,646],[276,614],[306,584],[330,566]],{c:shade(SWE,-.08),tex:'suveter',ta:.4,ts:.38,sa:2.3,sl:14,g:[320,550,190,640],hl:'rgba(255,240,255,.14)',sh:'rgba(30,15,70,.4)'});
+    paint(c,ell(196,634,14,9,14,-.7),{c:SKIN,n:20,sl:5,g:[206,626,186,642],hl:'rgba(255,230,220,.25)',sh:'rgba(100,40,40,.3)'});
   } else {
-    paint(c,[[206,470],[190,500],[178,540],[172,586],[176,626],[196,630],[200,590],[208,546],[222,500]],{c:shade(SWE,-.06),tex:'suveter',ta:.4,ts:.38,sa:1.8,sl:12,g:[220,480,170,630],hl:'rgba(255,240,255,.12)',sh:'rgba(30,15,70,.35)'});
-    paint(c,ell(188,632,12,8,14,-.3),{c:SKIN,n:20,sl:5});
+    paint(c,[[300,548],[282,572],[270,604],[264,646],[316,646],[322,606],[332,572]],{c:shade(SWE,-.08),tex:'suveter',ta:.4,ts:.38,sa:1.7,sl:14,g:[330,550,264,640],hl:'rgba(255,240,255,.14)',sh:'rgba(30,15,70,.4)'});
   }
-  // saç: uzun, sırta dökülen
-  const hx=252+dx, hy=390+dy;
-  paint(c,[[hx-30,hy+4],[hx-36,hy+48],[hx-46,hy+88],[hx-52,hy+120],[hx-44,hy+140],[hx-32,hy+146],[hx-18,hy+150],[hx-4,hy+155],[hx+10,hy+152],[hx+24,hy+148],[hx+38,hy+138],[hx+50,hy+126],[hx+50,hy+90],[hx+41,hy+48],[hx+32,hy+4]],{c:HAIR,sa:1.55,sv:.25,sl:26,sw:2.5,var:.5,n:300,g:[hx+40,hy,hx-40,hy+160],hl:'rgba(160,110,90,.2)',sh:'rgba(0,0,0,.35)'});
-  paint(c,ell(hx,hy-4,33,37,26,down?-.08:0),{c:HAIR,sa:1.3,sv:.6,sl:18,sw:2.2,var:.55,n:240,g:[hx+30,hy-40,hx-30,hy+34],hl:'rgba(180,125,100,.32)',sh:'rgba(0,0,0,.3)'});
-  wline(c,[[hx-22,hy-26],[hx-4,hy-38],[hx+18,hy-34]],'#a87562',2.2,.35);
-  hairStrands(c,hx-30,hy-30,hx+34,hy+150,60,'#5a3a36',.5);
-  hairStrands(c,hx+8,hy-34,hx+34,hy+60,24,'#9b6a55',.35);   // koridor ışığından parlama
-  // telefon ışığının saç kenarına vurması
-  c.save();sp(c,ell(hx,hy,36,41,26));c.clip();c.lineWidth=6;c.strokeStyle='rgba(200,190,255,.18)';c.beginPath();c.arc(hx-14,hy+10,38,Math.PI*.75,Math.PI*1.35);c.stroke();c.restore();
+  // sağ omuz: köşeden kadraja giren yumuşak lila kütle
+  paint(c,[[234,646],[242,598],[262,558],[294,526],[332,504],[372,494],[380,646]].map(([x,y])=>[x,y+dy]),{c:SWE,tex:'suveter',ta:.4,ts:.38,sa:1.2,sv:.6,sl:16,n:380,g:[372,520,260,640],hl:'rgba(255,240,255,.2)',sh:'rgba(30,15,70,.42)',ew:12,ea:.2});
+  // omuz dikişi ve ışık kenarı
+  wline(c,[[276,604+dy],[310,556+dy],[356,528+dy]],'#7d68b4',1.6,.35);
+  wline(c,[[246,612+dy],[266,566+dy],[300,532+dy],[372,502+dy]],'#e8dcff',2.2,.22);
+  if(blur)c.filter='none';
 }
 function drawGirlLie(c){
   // lila gövde başın arkasına doğru uzanır (sırtüstü değil, sola dönük)
@@ -833,8 +842,8 @@ const POSES={};
 function drawGirl(){
   const L='L-girl';
   const mkp=(key,fn,bx,by,bw,bh)=>{const a=useAsset(L,key,'pose');if(a){POSES[key]=a;return;}const c=mk(L,bx,by,bw,bh,'pose');fn(c);POSES[key]=c.canvas_;};
-  mkp('rSit',c=>drawGirlSit(c,false),130,330,240,320);
-  mkp('rDown',c=>drawGirlSit(c,true),130,330,240,320);
+  mkp('rSit',c=>drawGirlSit(c,false),170,480,200,170);
+  mkp('rDown',c=>drawGirlSit(c,true),170,480,200,170);
   mkp('rLie',c=>{c.translate(0,-44);drawGirlLie(c);},200,290,170,330);
   const q=useAsset(L,'quilt');
   if(q){q.id='quilt';}else{const c=mk(L,170,270,200,300);c.translate(0,-44);drawQuilt(c);c.canvas_.id='quilt';}
@@ -847,7 +856,7 @@ function makeGrain(){
   for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}
   x.putImageData(d,0,0);$('#grain').style.backgroundImage=`url(${c.toDataURL()})`;
   const L=$('#light');
-  for(let i=0;i<12;i++){const d=el('div','dust');d.style.left=(150+Math.random()*150)+'px';d.style.top=(120+Math.random()*220)+'px';d.style.animationDelay=(-Math.random()*11)+'s';d.style.animationDuration=(9+Math.random()*6)+'s';L.appendChild(d);}
+  for(let i=0;i<(LOW?5:12);i++){const d=el('div','dust');d.style.left=(150+Math.random()*150)+'px';d.style.top=(120+Math.random()*220)+'px';d.style.animationDelay=(-Math.random()*11)+'s';d.style.animationDuration=(9+Math.random()*6)+'s';L.appendChild(d);}
 }
 
 /* ============================================================
@@ -856,7 +865,11 @@ function makeGrain(){
 const PX={tx:0,ty:0,x:0,y:0,tilt:false};
 const layers=[...document.querySelectorAll('[data-depth]')].map(n=>({n,d:+n.dataset.depth}));
 addEventListener('pointermove',e=>{if(PX.tilt)return;PX.tx=(e.clientX/innerWidth-.5)*2;PX.ty=(e.clientY/innerHeight-.5)*2;},{passive:true});
-function onTilt(e){if(e.gamma==null)return;PX.tilt=true;PX.tx=Math.max(-1,Math.min(1,e.gamma/25));PX.ty=Math.max(-1,Math.min(1,((e.beta||45)-45)/25));}
+function onTilt(e){if(e.gamma==null)return;
+  if(!PX.base)PX.base={g:e.gamma,b:e.beta||0};
+  // taban yavaşça yeni duruşa kayar; böylece telefon nasıl tutulursa tutulsun oda ortalanır
+  PX.base.g+=(e.gamma-PX.base.g)*.004;PX.base.b+=((e.beta||0)-PX.base.b)*.004;
+  PX.tilt=true;PX.tx=Math.max(-1,Math.min(1,(e.gamma-PX.base.g)/20));PX.ty=Math.max(-1,Math.min(1,((e.beta||0)-PX.base.b)/20));}
 function loop(t){
   const amp=REDUCED?0:14, sway=REDUCED?0:.22;
   const sx=PX.tx+Math.sin(t/7000)*sway, sy=PX.ty+Math.cos(t/9000)*sway*.6;
