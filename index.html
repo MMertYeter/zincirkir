@@ -269,7 +269,8 @@ button{font-family:inherit}
 .ch-dim .bear-av{background:#2a2538}
 .c-head{flex:0 0 52px;display:flex;align-items:center;gap:9px;padding:0 12px;border-bottom:1px solid #241f31}
 .c-head .bear-av{width:32px;height:32px;font-size:18px}
-#cBody{flex:1;overflow:hidden;padding:12px 10px;display:flex;flex-direction:column}
+#cBody{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;scroll-behavior:smooth;padding:12px 10px;display:flex;flex-direction:column}
+#cBody::-webkit-scrollbar{display:none}
 #chat .in .bub{background:#2a2538;color:#f1ecfb}
 #chat .msg.typing .bub i{background:#a79fbd}
 #chat .msg.typing .who{color:#8d84a6}
@@ -492,6 +493,8 @@ const CONFIG = {
   DM_NAME: 'mertyeter',          // Instagram DM bölümleri (22 Kasım 2022)
   CHAT_NAME: 'mertt 🍯🐻🤍',       // sabah Sohbet uygulaması
   CHAT_MSG: 'günaydınnn meleğimmm her şeyim bitanemm bugün tanışma tarihimiz seni çokk cokk seviyorummm',
+  // buketten sonra gelen son mesaj
+  CHAT_MSG2: 'Rümeysamm iyi ki benim sevgilimsin iyi ki beraberiz seni her şeyden çok seviyorum melegimm çok mutluyum seninle ömür boyu beraber sarılıp uyumak en büyük hayalim',
 };
 /* Raster görseller (PNG/WebP, 1080x1920 şeffaf tuval). Bir yol yazılırsa
    o katmanın kodla çizilmiş hâli yerine görsel kullanılır. */
@@ -1188,7 +1191,14 @@ async function sceneChat(){
   const s=el('div','sticker');
   if(ASSETS.bouquet){const i=el('img');i.src=ASSETS.bouquet;i.alt='Çiçek buketi';s.appendChild(i);}else s.textContent='💐';
   body.appendChild(s);AU.tone(520,1040,.3,.05);G.bouquet=true;
-  await wait(3800);
+  const down=()=>{body.scrollTop=body.scrollHeight;};down();
+  await wait(2200);
+  if(CONFIG.CHAT_MSG2){
+    lastW=null;
+    await typingInd(body,CONFIG.CHAT_NAME,2200,down);
+    const e2=msgEl({w:'m',t:CONFIG.CHAT_MSG2},body);e2.classList.add('cont');AU.pop();G.chatMsg2=CONFIG.CHAT_MSG2;down();
+    await wait(Math.max(3800,CONFIG.CHAT_MSG2.length*55));   // okumaya zaman
+  } else await wait(1600);
 }
 async function sceneEnd(){
   G.scene='end';$('#end').classList.remove('hide');

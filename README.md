@@ -35,7 +35,7 @@ Android telefonlarda, 4 GB ve altı RAM'de ya da 4 ve altı çekirdekte kendili�
 ## Değiştirmesi kolay yerler (`index.html` başındaki `<script>`)
 
 - `CONFIG.NOTE_TEXT`: Rümeysa’nın Instagram notu. Ortadaki “…” Mert’ten gelecek.
-- `CONFIG.DM_NAME` / `CONFIG.CHAT_NAME` / `CONFIG.CHAT_MSG`
+- `CONFIG.DM_NAME` / `CONFIG.CHAT_NAME` / `CONFIG.CHAT_MSG` / `CONFIG.CHAT_MSG2` (buketten sonraki son mesaj)
 - `ASSETS`: raster görseller hazır olunca yolunu yaz. O katmanın kodla çizilmiş hâli kendiliğinden devre dışı kalır. Beklenen biçim: bölüm 9’daki gibi 1080x1920, şeffaf PNG/WebP, tam tuval.
   - `avatar2022`: Mert’in 2022 profil fotoğrafı (yuvarlak kırpılır, yoksa boş avatar)
   - `notesIcon`: Not Defteri simgesi (yoksa turuncu kare)
