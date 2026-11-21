@@ -54,17 +54,17 @@ button{font-family:inherit}
 #floorShade{position:absolute;left:-30px;right:-30px;top:303px;bottom:-30px;
   background:linear-gradient(180deg,rgba(15,8,30,.35),rgba(15,8,30,0) 30%,rgba(15,8,30,.25))}
 #baseboard{position:absolute;left:-30px;right:21px;top:298px;height:7px;background:rgba(40,25,60,.35);filter:blur(.6px)}
-.wallTex{position:absolute;inset:-30px;background-size:200px;opacity:.22;mix-blend-mode:multiply}
+.wallTex{position:absolute;inset:-30px;background-size:200px;opacity:var(--wallTexA,.22);mix-blend-mode:multiply;transition:opacity 1.4s ease}
 
 #hallGlow{position:absolute;left:198px;top:44px;width:108px;height:264px;background-color:var(--hall);opacity:var(--hallA);
   mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 62% 38%,#000 0%,rgba(0,0,0,.65) 55%,rgba(0,0,0,.25) 100%);
   mask-image:radial-gradient(ellipse 80% 70% at 62% 38%,#000 0%,rgba(0,0,0,.65) 55%,rgba(0,0,0,.25) 100%)}
 #hallDark{position:absolute;left:196px;top:40px;width:114px;height:272px;background-color:#0b0820;opacity:calc((1 - var(--hallA)) * .8)}
 #strip{position:absolute;inset:0;background-color:var(--hall);opacity:var(--stripA);filter:blur(5px);mix-blend-mode:screen;
-  clip-path:polygon(200px 306px,306px 306px,214px 470px,40px 470px);
+  clip-path:polygon(196px 306px,306px 306px,200px 480px,10px 480px);
   -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.55) 45%,transparent 100%);
   mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.55) 45%,transparent 100%)}
-#momShadow{opacity:0;transition:opacity .9s ease}
+#momShadow{opacity:0;transition:opacity .9s ease;filter:blur(1.4px)}
 #stage.mom #momShadow{opacity:1}
 #stage.mom #hallGlow{opacity:1 !important}
 #stage.mom #strip{opacity:.95 !important}
@@ -294,7 +294,7 @@ button{font-family:inherit}
 #tip{position:absolute;left:50%;top:196px;transform:translateX(-50%) translateY(6px);background:rgba(25,15,45,.78);color:#fff3d6;font-size:12px;font-weight:700;
   padding:7px 13px;border-radius:14px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .4s ease,transform .4s ease;border:1px solid rgba(255,210,63,.35)}
 #tip.on{opacity:1;transform:translateX(-50%)}
-.zz{position:absolute;font-size:18px;pointer-events:none;animation:zz 3.2s ease-out forwards}
+.zz{position:absolute;font-size:26px;filter:drop-shadow(0 0 6px rgba(200,190,255,.9));pointer-events:none;animation:zz 3.2s ease-out forwards}
 @keyframes zz{0%{opacity:0;transform:translate(0,0) scale(.5)}20%{opacity:.95}100%{opacity:0;transform:translate(-36px,-110px) scale(1.2)}}
 #fade{position:absolute;inset:0;background:#07040f;opacity:0;pointer-events:none;transition:opacity 1.6s ease}
 #fade.on{opacity:1}
@@ -309,6 +309,7 @@ button{font-family:inherit}
 .btn{margin-top:38px;min-width:150px;height:52px;border:0;border-radius:26px;background:#fff7ef;color:#4b3473;font-size:18px;font-weight:800;
   box-shadow:0 8px 22px rgba(90,60,150,.35),inset 0 -3px 0 rgba(120,90,170,.18);cursor:pointer}
 .btn:active{transform:translateY(2px)}
+.btn:disabled{opacity:.6}
 #title .from{position:absolute;bottom:40px;font-size:12px;font-weight:700;opacity:.6}
 #title .snd{margin-top:14px;font-size:11.5px;font-weight:700;opacity:.55}
 #end{z-index:20;background:rgba(18,10,34,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
@@ -457,7 +458,7 @@ button{font-family:inherit}
     <div class="heart">🤍</div>
     <h1>Bizim Hikayemiz</h1>
     <div class="sub">Bölüm 1: Bir not, bir cevap</div>
-    <button class="btn" id="startBtn">Başla</button>
+    <button class="btn" id="startBtn" disabled>Hazırlanıyor…</button>
     <div class="snd">🎧 Sesi açık tut</div>
     <div class="from">Mert’ten Rümeysa’ya</div>
   </div>
@@ -610,10 +611,10 @@ addEventListener('resize',fit); fit();
    IŞIK FAZLARI (bölüm 5)
    ============================================================ */
 const PH = {
-  noon:   {wall:'#b7a5d0',floor:'#8a769f',hall:'#fff1cf',hallA:.95,tone:'#3b2a63',toneA:.18,glowA:.12,stripA:.6, bearGlow:0},
-  evening:{wall:'#a97390',floor:'#7a5170',hall:'#ffc47e',hallA:.9, tone:'#ff8a3d',toneA:.20,glowA:.30,stripA:.55,bearGlow:0},
-  night:  {wall:'#2f2a55',floor:'#1f1b3d',hall:'#35305f',hallA:.10,tone:'#070518',toneA:.50,glowA:.85,stripA:.04,bearGlow:.75},
-  morning:{wall:'#f0c4b4',floor:'#c7b4d8',hall:'#fff1d8',hallA:.35,tone:'#ffd9c4',toneA:.10,glowA:.05,stripA:.25,bearGlow:0},
+  noon:   {wall:'#b7a5d0',floor:'#8a769f',hall:'#fff1cf',hallA:.95,tone:'#3b2a63',toneA:.18,glowA:.12,stripA:.6, bearGlow:0,wallTexA:.22},
+  evening:{wall:'#a97390',floor:'#7a5170',hall:'#ffc47e',hallA:.9, tone:'#ff8a3d',toneA:.20,glowA:.30,stripA:.55,bearGlow:0,wallTexA:.22},
+  night:  {wall:'#2f2a55',floor:'#1f1b3d',hall:'#35305f',hallA:.10,tone:'#070518',toneA:.42,glowA:.85,stripA:.04,bearGlow:.75,wallTexA:.22},
+  morning:{wall:'#f0c4b4',floor:'#c7b4d8',hall:'#fff1d8',hallA:.7,tone:'#ffd9c4',toneA:.10,glowA:.05,stripA:.25,bearGlow:0,wallTexA:.1},
 };
 const h2r=h=>{h=h.replace('#','');return[0,2,4].map(i=>parseInt(h.substr(i,2),16));};
 const r2h=a=>'#'+a.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join('');
@@ -726,16 +727,20 @@ function drawDoor(){
 /* ---------- 4. annenin gölgesi ---------- */
 function drawMomShadow(){
   if(useAsset('L-strip','momShadow','pc')){$('#L-strip img').id='momShadow';return;}
-  const c=mk('L-strip',60,296,240,190);c.canvas_.id='momShadow';
-  // ayaklar eşikte, baş odaya doğru uzanır (ışık arkadan)
-  for(let s=0;s<6;s++){
-    const e=s*2.2, a=.10;
-    c.fillStyle=`rgba(32,14,52,${a})`;
-    c.beginPath();
-    c.moveTo(244-e,308);c.lineTo(272+e,308);c.lineTo(224+e,368);c.lineTo(196+e*.6,404);c.lineTo(178-e,410);c.lineTo(168-e,396);c.lineTo(194-e,360);c.closePath();c.fill();
-    c.beginPath();c.ellipse(158,430,18+e,13+e*.8,-.75,0,Math.PI*2);c.fill();
-    c.beginPath();c.ellipse(176,414,9+e*.5,7+e*.5,-.75,0,Math.PI*2);c.fill();
-  }
+  const c=mk('L-strip',20,296,220,200);c.canvas_.id='momShadow';
+  // ayaklar eşikte (yatağın solunda görünen kısım), baş odaya doğru uzanır
+  c.save();c.translate(206,310);c.rotate(.62);   // gölge ekseni: aşağı-sola
+  const parts=[
+    ()=>{c.beginPath();c.moveTo(-9,0);c.lineTo(9,0);c.lineTo(13,52);c.lineTo(10,62);c.lineTo(-10,62);c.lineTo(-13,52);c.closePath();}, // bacaklar/etek
+    ()=>{c.beginPath();c.moveTo(-14,58);c.quadraticCurveTo(-18,90,-15,112);c.lineTo(15,112);c.quadraticCurveTo(18,90,14,58);c.closePath();}, // gövde
+    ()=>{c.beginPath();c.moveTo(-15,70);c.quadraticCurveTo(-26,92,-22,108);c.lineTo(-17,106);c.quadraticCurveTo(-18,90,-12,74);c.closePath();}, // kol
+    ()=>{c.beginPath();c.moveTo(15,70);c.quadraticCurveTo(26,92,22,108);c.lineTo(17,106);c.quadraticCurveTo(18,90,12,74);c.closePath();},
+    ()=>{c.beginPath();c.rect(-5,110,10,8);}, // boyun
+    ()=>{c.beginPath();c.ellipse(0,130,13,16,0,0,Math.PI*2);}, // baş
+    ()=>{c.beginPath();c.ellipse(0,143,9,7,0,0,Math.PI*2);},   // topuz
+  ];
+  for(let k=0;k<5;k++){c.fillStyle=`rgba(30,12,50,${k===0?.5:.08})`;c.lineWidth=k*3;c.strokeStyle='rgba(30,12,50,.08)';for(const f of parts){f();c.fill();if(k)c.stroke();}}
+  c.restore();
 }
 /* ---------- 5. ayı ---------- */
 function drawBear(){
@@ -779,8 +784,8 @@ function drawBed(){
   const folds=[[[226,360],[262,388],[300,392]],[[214,420],[246,450],[262,500]],[[300,330],[330,360],[350,410]],[[190,520],[216,560],[230,620]],[[250,430],[300,450],[340,446]]];
   for(const f of folds){wline(c,f,'#c45b8a',4.5,.18);wline(c,f.map(([x,y])=>[x+3,y-3]),'#ffe1ee',2.2,.25);}
   // yastık (kameraya yakın uç)
-  paint(c,[[262,580],[290,562],[330,556],[364,560],[372,600],[372,650],[262,650],[256,612]],{c:'#f3eaf6',tex:'kagit',ta:.25,ts:.5,sa:-.2,var:.15,g:[360,560,262,650],hl:'rgba(255,255,255,.3)',sh:'rgba(80,50,110,.25)'});
-  soft(c,250,560,60,22,'#5c1d45',.18);
+  paint(c,[[258,536],[288,516],[330,510],[364,514],[372,560],[372,650],[262,650],[250,580]],{c:'#f3eaf6',tex:'kagit',ta:.25,ts:.5,sa:-.2,var:.15,g:[360,560,262,650],hl:'rgba(255,255,255,.3)',sh:'rgba(80,50,110,.25)'});
+  soft(c,248,520,60,22,'#5c1d45',.18);
 }
 /* ---------- 7. Rümeysa (dört poz + yorgan) ---------- */
 const HAIR='#2b1d25', SWE='#a690d6', SKIN='#e2ad94';
@@ -830,9 +835,9 @@ function drawGirl(){
   const mkp=(key,fn,bx,by,bw,bh)=>{const a=useAsset(L,key,'pose');if(a){POSES[key]=a;return;}const c=mk(L,bx,by,bw,bh,'pose');fn(c);POSES[key]=c.canvas_;};
   mkp('rSit',c=>drawGirlSit(c,false),130,330,240,320);
   mkp('rDown',c=>drawGirlSit(c,true),130,330,240,320);
-  mkp('rLie',drawGirlLie,200,340,170,310);
+  mkp('rLie',c=>{c.translate(0,-44);drawGirlLie(c);},200,290,170,330);
   const q=useAsset(L,'quilt');
-  if(q){q.id='quilt';}else{const c=mk(L,170,320,200,280);drawQuilt(c);c.canvas_.id='quilt';}
+  if(q){q.id='quilt';}else{const c=mk(L,170,270,200,300);c.translate(0,-44);drawQuilt(c);c.canvas_.id='quilt';}
 }
 function setPose(name){for(const k in POSES) POSES[k].style.opacity = (k===name?1:0);}
 
@@ -1095,7 +1100,7 @@ async function sceneSleep(){
   $('#quilt').classList.add('up');
   await wait(800);
   G.slept=true;
-  const zz=()=>{const z=el('div','zz','💤');z.style.left=(282+Math.random()*20)+'px';z.style.top='520px';$('#L-girl').appendChild(z);setTimeout(()=>z.remove(),3300);};
+  const zz=()=>{const z=el('div','zz','💤');z.style.left=(282+Math.random()*20)+'px';z.style.top='470px';$('#L-girl').appendChild(z);setTimeout(()=>z.remove(),3300);};
   zz();const zi=setInterval(zz,1300/SPEED);
   await wait(5500);                                   // (5)
   clearInterval(zi);AU.tickOn=false;
@@ -1105,10 +1110,12 @@ async function sceneMorning(){
   $('#fade').classList.add('on');await wait(1800);
   setPhase('morning');$('#quilt').classList.remove('up');setPose('rSit');
   $('#dmList').classList.remove('drift');
-  showApp('lock');cam('read');drop.classList.remove('gone');
+  showApp('lock');cam('read');
   caption('Ertesi sabah','narr');
   await wait(400);$('#fade').classList.remove('on');
-  await wait(1700);caption('');
+  await wait(1500);caption('');
+  drop.classList.remove('gone');   // Rümeysa telefonu eline alır
+  await wait(1300);
   // yıl sayacı: 2022 → 2026
   const DAYS=['Salı','Çarşamba','Cuma','Cumartesi','Pazar'];
   await wait(1000);
@@ -1196,6 +1203,7 @@ async function boot(){
   setPhase('noon');setPose('rSit');
   requestAnimationFrame(loop);
   G.ready=true;
+  $('#startBtn').disabled=false;$('#startBtn').textContent='Başla';
   const startAt=Q.get('sahne');
   await tapOnce($('#startBtn'));
   AU.init();
